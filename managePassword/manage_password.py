@@ -1,8 +1,7 @@
 import hashlib
-from tkinter.constants import BOTH, CENTER, END, LEFT, RIGHT, VERTICAL, Y
+from tkinter import *
 from databaseGenerator.generate_database import init_database
 from passwordGenerator.generate_password import PasswordGenerator
-from tkinter import Button, Canvas, Entry, Frame, Label, Scrollbar, Tk
 from functools import partial
 from storage.storage_methods import StorageMethods
 
@@ -16,10 +15,10 @@ class PasswordManager:
         self.window.title("Password Manager")
         self.window.geometry("650x350")
 
-    def welcome_new_user(self):
+    def create_new_user(self):
         self.window.geometry("450x200")
 
-        label1 = Label(self.window, text="Create New Master Password")
+        label1 = Label(self.window, text="Create New Password")
         label1.config(anchor=CENTER)
         label1.pack(pady=10)
 
@@ -38,16 +37,16 @@ class PasswordManager:
         self.feedback.pack()
 
         save_btn = Button(self.window, text="Create Password",
-                          command=partial(self.save_master_password, mp_entry_box, rmp_entry_box))
+                          command=partial(self.save_password, mp_entry_box, rmp_entry_box))
         save_btn.pack(pady=5)
 
-    def login_user(self):
+    def login(self):
         for widget in self.window.winfo_children():
             widget.destroy()
 
         self.window.geometry("450x200")
 
-        label1 = Label(self.window, text="Enter your master password")
+        label1 = Label(self.window, text="Enter your password")
         label1.config(anchor=CENTER)
         label1.place(x=150, y=50)
 
@@ -59,10 +58,10 @@ class PasswordManager:
         self.feedback.place(x=170, y=105)
 
         login_btn = Button(self.window, text="Log In", command=partial(
-            self.check_master_password, self.password_entry_box))
+            self.check_password, self.password_entry_box))
         login_btn.place(x=200, y=130)
 
-    def save_master_password(self, eb1, eb2):
+    def save_password(self, eb1, eb2):
         password1 = eb1.get()
         password2 = eb2.get()
         if password1 == password2:
@@ -71,25 +70,25 @@ class PasswordManager:
             VALUES(?) """
             self.cursor.execute(insert_command, [hashed_password])
             self.db.commit()
-            self.login_user()
+            self.login()
         else:
             self.feedback.config(text="Passwords do not match", fg="red")
 
-    def check_master_password(self, eb):
+    def check_password(self, eb):
         hashed_password = self.encrypt_password(eb.get())
         self.cursor.execute(
             "SELECT * FROM master WHERE id = 1 AND password = ?", [hashed_password])
         if self.cursor.fetchall():
-            self.password_vault_screen()
+            self.password_storage_screen()
         else:
             self.password_entry_box.delete(0, END)
             self.feedback.config(text="Incorrect password", fg="red")
 
-    def password_vault_screen(self):
+    def password_storage_screen(self):
         for widget in self.window.winfo_children():
             widget.destroy()
 
-        vault_methods = StorageMethods()
+        storage_methods = StorageMethods()
 
         self.window.geometry("850x350")
         main_frame = Frame(self.window)
@@ -102,7 +101,11 @@ class PasswordManager:
             main_frame, orient=VERTICAL, command=main_canvas.yview)
         main_scrollbar.pack(side=RIGHT, fill=Y)
 
-        main_canvas.configure(yscrollcommand=main_scrollbar.set)
+        horizontal_scrollbar = Scrollbar(
+            main_frame, orient=HORIZONTAL, command=main_canvas.xview)
+        main_scrollbar.pack(side=BOTTOM, fill=X)
+
+        main_canvas.configure(yscrollcommand=main_scrollbar.set, xscrollcommand=horizontal_scrollbar.set)
         main_canvas.bind('<Configure>', lambda e: main_canvas.configure(
             scrollregion=main_canvas.bbox("all")))
 
@@ -114,7 +117,7 @@ class PasswordManager:
         generate_password_btn.grid(row=1, column=2, pady=10)
 
         add_password_btn = Button(
-            second_frame, text="Add New Password", command=partial(vault_methods.add_password, self.password_vault_screen))
+            second_frame, text="Add New Password", command=partial(storage_methods.add_password, self.password_storage_screen))
         add_password_btn.grid(row=1, column=3, pady=10)
 
         lbl = Label(second_frame, text="Platform")
@@ -145,10 +148,10 @@ class PasswordManager:
                                   command=partial(self.copy_text, array[i][3]))
                 copy_btn.grid(column=3, row=i + 3, pady=10, padx=10)
                 update_btn = Button(second_frame, text="Update Password",
-                                    command=partial(vault_methods.update_password, array[i][0], self.password_vault_screen))
+                                    command=partial(storage_methods.update_password, array[i][0], self.password_storage_screen))
                 update_btn.grid(column=4, row=i + 3, pady=10, padx=10)
                 remove_btn = Button(second_frame, text="Delete Password",
-                                    command=partial(vault_methods.remove_password, array[i][0], self.password_vault_screen))
+                                    command=partial(storage_methods.remove_password, array[i][0], self.password_storage_screen))
                 remove_btn.grid(column=5, row=i + 3, pady=10, padx=10)
 
                 i += 1
@@ -172,8 +175,8 @@ if __name__ == '__main__':
     cursor.execute("SELECT * FROM master")
     manager = PasswordManager()
     if cursor.fetchall():
-        manager.login_user()
+        manager.login()
     else:
-        manager.welcome_new_user()
+        manager.create_new_user()
     manager.window.mainloop()
     
