@@ -1,30 +1,20 @@
 from tkinter import *
-
 import string
-import random
-from tkinter.constants import END
+from secrets import choice
 
-list_of_characters = []
 
-uppercase = random.randint(0, 25)
-list_of_characters.append(string.ascii_uppercase[uppercase])
-
-lowercase = random.randint(0, 25)
-list_of_characters.append(string.ascii_lowercase[lowercase])
-
-numbers = random.randint(0, 9)
-list_of_characters.append(string.digits[numbers])
-
-special_character = random.randint(0, 35)
-list_of_characters.append(string.punctuation[special_character])
+UPPERCASE = list(string.ascii_uppercase)
+LOWERCASE = list(string.ascii_lowercase)
+NUMBER = list(string.digits)
+SYMBOLS = list(string.punctuation)
 
 
 class PasswordGenerator:
+
     def __init__(self):
         self.window = Tk()
         self.window.title("Password Generator")
         self.window.geometry("450x300")
-        self.window.configure(background="#856ff8")
 
         # Label Frame
         self.label_frame = LabelFrame(
@@ -49,32 +39,31 @@ class PasswordGenerator:
 
         # Generate Password Button
         generate_btn = Button(
-            self.button_frame, text=" Generate Password", command=self.generate_random_password
-        )
+            self.button_frame, text="Generate Password", command=self.generate_random_password)
         generate_btn.grid(row=0, column=0, padx=10)
 
-        # copy Password Button
-        copy_btn = Button(self.button_frame, text=" Copy Password")
+        # Copy Password Button
+        copy_btn = Button(self.button_frame,
+                          text="Copy Password", command=self.copy_password)
         copy_btn.grid(row=0, column=1, padx=10)
 
     def generate_random_password(self):
         self.password_entry_box.delete(0, END)
         try:
-            password_lenght = int(self.length_entry_box.get())
-            self.feedback.destroy()
-
-            for i in range(password_lenght - 4):
-                rest_characters = random.randint(0, 95)
-                list_of_characters.append(string.printable[rest_characters])
-
-            random.shuffle(list_of_characters)
-            password = ''.join(list_of_characters)
+            password_length = int(self.length_entry_box.get())
+            self.feedback.destroy()  # Destroy feedback if length is there
+            data = UPPERCASE+LOWERCASE+NUMBER + SYMBOLS
+            password = ''.join(choice(data) for _ in range(password_length))
             self.password_entry_box.insert(0, password)
         except ValueError:
             self.feedback = Label(self.window, fg="red",
-                                  text="Please Enter number of Character")
+                                  text="Please enter number of characters")
             self.feedback.place(x=130, y=100)
 
+    def copy_password(self):
+        self.window.clipboard_clear()
+        self.window.clipboard_append(self.password_entry_box.get())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     PasswordGenerator().window.mainloop()
