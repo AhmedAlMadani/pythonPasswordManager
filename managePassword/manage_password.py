@@ -96,7 +96,7 @@ class PasswordManager:
 
         storage_methods = StorageMethods()
 
-        self.window.geometry("1050x350")
+        self.window.geometry("1100x350")
         main_frame = Frame(self.window)
         main_frame.pack(fill=BOTH, expand=1)
 
