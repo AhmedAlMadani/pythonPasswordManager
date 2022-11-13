@@ -6,6 +6,12 @@ from functools import partial
 from storage.storage_methods import StorageMethods
 
 
+def encrypt_password(password):
+    password = password.encode("utf-8")
+    encoded_text = hashlib.md5(password).hexdigest()
+    return encoded_text
+
+
 class PasswordManager:
 
     def __init__(self):
@@ -65,7 +71,7 @@ class PasswordManager:
         password1 = eb1.get()
         password2 = eb2.get()
         if password1 == password2:
-            hashed_password = self.encrypt_password(password1)
+            hashed_password = encrypt_password(password1)
             insert_command = """INSERT INTO master(password)
             VALUES(?) """
             self.cursor.execute(insert_command, [hashed_password])
@@ -75,7 +81,7 @@ class PasswordManager:
             self.feedback.config(text="Passwords do not match", fg="red")
 
     def check_password(self, eb):
-        hashed_password = self.encrypt_password(eb.get())
+        hashed_password = encrypt_password(eb.get())
         self.cursor.execute(
             "SELECT * FROM master WHERE id = 1 AND password = ?", [hashed_password])
         if self.cursor.fetchall():
@@ -114,18 +120,18 @@ class PasswordManager:
 
         generate_password_btn = Button(second_frame, text="Generate Password",
                                        command=PasswordGenerator)
-        generate_password_btn.grid(row=1, column=2, pady=10)
+        generate_password_btn.grid(row=1, column=2, pady=30)
 
         add_password_btn = Button(
             second_frame, text="Add New Password", command=partial(storage_methods.add_password, self.password_storage_screen))
-        add_password_btn.grid(row=1, column=3, pady=10)
+        add_password_btn.grid(row=1, column=3, pady=30)
 
-        lbl = Label(second_frame, text="Platform")
-        lbl.grid(row=2, column=0, padx=40, pady=10)
-        lbl = Label(second_frame, text="Email/Username")
-        lbl.grid(row=2, column=1, padx=40, pady=10)
-        lbl = Label(second_frame, text="Password")
-        lbl.grid(row=2, column=2, padx=40, pady=10)
+        lbl = Label(second_frame, text="PLATFORM", font=('Lora', 10))
+        lbl.grid(row=2, column=0, padx=42, pady=10)
+        lbl = Label(second_frame, text="EMAIL/USERNAME", font=('Lora', 10))
+        lbl.grid(row=2, column=1, padx=42, pady=10)
+        lbl = Label(second_frame, text="PASSWORD", font=('Lora', 10))
+        lbl.grid(row=2, column=2, padx=42, pady=10)
 
         self.cursor.execute("SELECT * FROM vault")
 
@@ -159,11 +165,6 @@ class PasswordManager:
                 self.cursor.execute("SELECT * FROM vault")
                 if len(self.cursor.fetchall()) <= i:
                     break
-
-    def encrypt_password(self, password):
-        password = password.encode("utf-8")
-        encoded_text = hashlib.md5(password).hexdigest()
-        return encoded_text
 
     def copy_text(self, text):
         self.window.clipboard_clear()
