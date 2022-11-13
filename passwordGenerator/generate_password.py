@@ -3,10 +3,10 @@ import string
 from secrets import choice
 
 
-UPPERCASE = list(string.ascii_uppercase)
-LOWERCASE = list(string.ascii_lowercase)
-NUMBER = list(string.digits)
-SYMBOLS = list(string.punctuation)
+uppercase = list(string.ascii_uppercase)
+lowercase = list(string.ascii_lowercase)
+number = list(string.digits)
+special_character = list(string.punctuation)
 
 
 class PasswordGenerator:
@@ -21,16 +21,16 @@ class PasswordGenerator:
             self.window, text="Enter the number of characters")
         self.label_frame.pack(pady=20)
 
-        # Entry box for number of characters
+        # Entry box
         self.length_entry_box = Entry(self.label_frame, width=20)
         self.length_entry_box.pack(padx=20, pady=20)
 
-        # Declaring feedback if no length is found
+        # message
         self.feedback = Label(self.window)
 
-        # Entry box for password
+        # Entry box
         self.password_entry_box = Entry(
-            self.window, text="", width=50)
+            self.window, width=50)
         self.password_entry_box.pack(pady=20)
 
         # Frame for buttons
@@ -39,7 +39,7 @@ class PasswordGenerator:
 
         # Generate Password Button
         generate_btn = Button(
-            self.button_frame, text="Generate Password", command=self.generate_random_password)
+            self.button_frame, text="Generate Password", command=self.generate_password)
         generate_btn.grid(row=0, column=0, padx=10)
 
         # Copy Password Button
@@ -47,12 +47,12 @@ class PasswordGenerator:
                           text="Copy Password", command=self.copy_password)
         copy_btn.grid(row=0, column=1, padx=10)
 
-    def generate_random_password(self):
+    def generate_password(self):
         self.password_entry_box.delete(0, END)
         try:
             password_length = int(self.length_entry_box.get())
             self.feedback.destroy()  # Destroy feedback if length is there
-            data = UPPERCASE+LOWERCASE+NUMBER + SYMBOLS
+            data = uppercase + lowercase + number + special_character
             password = ''.join(choice(data) for _ in range(password_length))
             self.password_entry_box.insert(0, password)
         except ValueError:
