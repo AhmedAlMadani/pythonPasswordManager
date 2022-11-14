@@ -22,7 +22,7 @@ class PasswordManager:
         self.window.geometry("650x350")
 
     def create_new_user(self):
-        self.window.geometry("450x200")
+        self.window.geometry("650x200")
 
         label1 = Label(self.window, text="Create New Password")
         label1.config(anchor=CENTER)
