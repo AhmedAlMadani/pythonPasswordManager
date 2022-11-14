@@ -2,7 +2,7 @@ import sqlite3
 
 
 def init_database():
-    with sqlite3.connect("password_storage.db") as db:
+    with sqlite3.connect("password_manager.db") as db:
         cursor = db.cursor()
     cursor.execute("""
             CREATE TABLE IF NOT EXISTS master(
