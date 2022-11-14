@@ -11,9 +11,8 @@ def init_database():
             """)
 
     cursor.execute("""
-            CREATE TABLE IF NOT EXISTS vault(
+            CREATE TABLE IF NOT EXISTS storage(
             id INTEGER PRIMARY KEY,
-            platform TEXT NOT NULL,
             userid TEXT NOT NULL,
             password TEXT NOT NULL);
             """)

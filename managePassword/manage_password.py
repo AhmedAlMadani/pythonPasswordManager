@@ -123,46 +123,44 @@ class PasswordManager:
         generate_password_btn.grid(row=1, column=2, pady=30)
 
         add_password_btn = Button(
-            second_frame, text="Add New Password", command=partial(storage_methods.add_password, self.password_storage_screen))
+            second_frame, text="Add New Password",
+            command=partial(storage_methods.add_password, self.password_storage_screen))
         add_password_btn.grid(row=1, column=3, pady=30)
 
-        lbl = Label(second_frame, text="PLATFORM", font=('Lora', 10))
-        lbl.grid(row=2, column=0, padx=42, pady=10)
         lbl = Label(second_frame, text="EMAIL/USERNAME", font=('Lora', 10))
         lbl.grid(row=2, column=1, padx=42, pady=10)
         lbl = Label(second_frame, text="PASSWORD", font=('Lora', 10))
         lbl.grid(row=2, column=2, padx=42, pady=10)
 
-        self.cursor.execute("SELECT * FROM vault")
+        self.cursor.execute("SELECT * FROM storage")
 
         if self.cursor.fetchall():
             i = 0
             while True:
-                self.cursor.execute("SELECT * FROM vault")
+                self.cursor.execute("SELECT * FROM storage")
                 array = self.cursor.fetchall()
 
-                platform_label = Label(second_frame, text=(array[i][1]))
-                platform_label.grid(column=0, row=i + 3)
-
-                account_label = Label(second_frame, text=(array[i][2]))
+                account_label = Label(second_frame, text=(array[i][1]))
                 account_label.grid(column=1, row=i + 3)
 
-                password_label = Label(second_frame, text=(array[i][3]))
+                password_label = Label(second_frame, text=(array[i][2]))
                 password_label.grid(column=2, row=i + 3)
 
                 copy_btn = Button(second_frame, text="Copy Password",
-                                  command=partial(self.copy_text, array[i][3]))
+                                  command=partial(self.copy_text, array[i][2]))
                 copy_btn.grid(column=3, row=i + 3, pady=10, padx=10)
                 update_btn = Button(second_frame, text="Update Password",
-                                    command=partial(storage_methods.update_password, array[i][0], self.password_storage_screen))
+                                    command=partial(storage_methods.update_password, array[i][0],
+                                                    self.password_storage_screen))
                 update_btn.grid(column=4, row=i + 3, pady=10, padx=10)
                 remove_btn = Button(second_frame, text="Delete Password",
-                                    command=partial(storage_methods.remove_password, array[i][0], self.password_storage_screen))
+                                    command=partial(storage_methods.remove_password, array[i][0],
+                                                    self.password_storage_screen))
                 remove_btn.grid(column=5, row=i + 3, pady=10, padx=10)
 
                 i += 1
 
-                self.cursor.execute("SELECT * FROM vault")
+                self.cursor.execute("SELECT * FROM storage")
                 if len(self.cursor.fetchall()) <= i:
                     break
 
@@ -180,4 +178,3 @@ if __name__ == '__main__':
     else:
         manager.create_new_user()
     manager.window.mainloop()
-    
