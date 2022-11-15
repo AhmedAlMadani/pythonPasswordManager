@@ -57,7 +57,7 @@ class PasswordManager:
         label1.place(x=150, y=50)
 
         self.password_entry_box = Entry(self.window, width=20, show="*")
-        self.password_entry_box.place(x=160, y=80)
+        self.password_entry_box.place(x=150, y=80)
         self.password_entry_box.focus()
 
         self.feedback = Label(self.window)
